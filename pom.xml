@@ -30,7 +30,7 @@
         <module>wsagent</module>
         <module>multiuser</module>
         <module>ide</module>
-        <module>agents</module>
+        <module>agents</module> 
         <module>infrastructures</module>
         <module>plugins</module>
         <module>ide/che-ide-core</module>
