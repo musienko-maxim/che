@@ -33,7 +33,7 @@ suite(`Login to Openshift console and start WebTerminal ${BASE_TEST_CONSTANTS.TE
 	const fileForVerificationTerminalCommands: string = 'result.txt';
 
 	suiteSetup(function (): void {
-		kubernetesCommandLineToolsExecutor.loginToOcp('admin');
+		kubernetesCommandLineToolsExecutor.loginToOCPonROSA();
 	});
 
 	suiteTeardown(function (): void {
@@ -45,7 +45,7 @@ suite(`Login to Openshift console and start WebTerminal ${BASE_TEST_CONSTANTS.TE
 		await driverHelper.refreshPage();
 		await webTerminal.clickOnWebTerminalIcon();
 	});
-	test.skip('Verify first started WTO widget and disabled state Project field under admin user', async function (): Promise<void> {
+	test('Verify first started WTO widget and disabled state Project field under admin user', async function (): Promise<void> {
 		await webTerminal.waitTerminalWidget();
 		expect(await webTerminal.waitDisabledProjectFieldAndGetProjectName()).equal(defaultWTOProjectNameForAdmin);
 	});
