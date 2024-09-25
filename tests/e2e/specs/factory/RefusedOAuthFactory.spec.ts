@@ -39,6 +39,7 @@ import { BASE_TEST_CONSTANTS } from '../../constants/BASE_TEST_CONSTANTS';
 import { FACTORY_TEST_CONSTANTS, GitProviderType } from '../../constants/FACTORY_TEST_CONSTANTS';
 import { ITestWorkspaceUtil } from '../../utils/workspace/ITestWorkspaceUtil';
 import { Dashboard } from '../../pageobjects/dashboard/Dashboard';
+import { CreateWorkspace } from '../../pageobjects/dashboard/CreateWorkspace';
 
 suite(
 	`Create a workspace via launching a factory from the ${FACTORY_TEST_CONSTANTS.TS_SELENIUM_FACTORY_GIT_PROVIDER} repository and deny the access ${BASE_TEST_CONSTANTS.TEST_ENVIRONMENT}`,
@@ -53,6 +54,7 @@ suite(
 		const oauthPage: OauthPage = e2eContainer.get(CLASSES.OauthPage);
 		const testWorkspaceUtil: ITestWorkspaceUtil = e2eContainer.get(TYPES.WorkspaceUtil);
 		const dashboard: Dashboard = e2eContainer.get(CLASSES.Dashboard);
+		const createWorkspace: CreateWorkspace = e2eContainer.get(CLASSES.CreateWorkspace);
 
 		let projectSection: ViewSection;
 		let scmProvider: SingleScmProvider;
@@ -76,6 +78,7 @@ suite(
 
 		test(`Navigate to the ${isPrivateRepo} repository factory URL`, async function (): Promise<void> {
 			await browserTabsUtil.navigateTo(FACTORY_TEST_CONSTANTS.TS_SELENIUM_FACTORY_URL());
+			await createWorkspace.performTrustAuthorPopup();
 		});
 
 		test(`Authorize with a ${FACTORY_TEST_CONSTANTS.TS_SELENIUM_FACTORY_GIT_PROVIDER} OAuth and deny access`, async function (): Promise<void> {
@@ -103,15 +106,13 @@ suite(
 		if (FACTORY_TEST_CONSTANTS.TS_SELENIUM_IS_PRIVATE_FACTORY_GIT_REPO) {
 			test('Check that a project folder has not been cloned', async function (): Promise<void> {
 				testRepoProjectName = StringUtil.getProjectNameFromGitUrl(FACTORY_TEST_CONSTANTS.TS_SELENIUM_FACTORY_GIT_REPO_URL);
-				await driverHelper.waitVisibility(webCheCodeLocators.ScmView.multiProviderItem);
+				await driverHelper.waitVisibility(webCheCodeLocators.TitleBar.itemElement);
 				await projectAndFileTests.performTrustAuthorDialog();
 				const isProjectFolderUnable: string = await driverHelper.waitAndGetElementAttribute(
 					(webCheCodeLocators.TreeItem as any).projectFolderItem,
 					'aria-label'
 				);
-				expect(isProjectFolderUnable).to.contain(
-					'/projects/' + testRepoProjectName + ' • Unable to resolve workspace folder (Unable to resolve nonexistent file'
-				);
+				expect(isProjectFolderUnable).to.contain('No Folder Opened Section');
 			});
 		} else {
 			test('Check if a project folder has been created', async function (): Promise<void> {
@@ -247,6 +248,8 @@ suite(
 		});
 
 		suiteTeardown('Stop and delete the workspace by API', async function (): Promise<void> {
+			// to avoid a possible creating workspace which is not appeared on Dashboard yet. TODO: implement a better solution.
+			await driverHelper.wait(30000);
 			await testWorkspaceUtil.stopAndDeleteWorkspaceByName(WorkspaceHandlingTests.getWorkspaceName());
 		});
 

@@ -74,23 +74,6 @@ export class KubernetesCommandLineToolsExecutor implements IKubernetesCommandLin
 			Logger.debug(`${this.kubernetesCommandLineTool} - doesn't support login command`);
 		}
 	}
-	loginToOCPonROSA(
-		user: string = OAUTH_CONSTANTS.TS_SELENIUM_OCP_USERNAME,
-		password: string = OAUTH_CONSTANTS.TS_SELENIUM_OCP_PASSWORD
-	): void {
-		if (this.kubernetesCommandLineTool === KubernetesCommandLineTool.OC) {
-			Logger.debug(`${this.kubernetesCommandLineTool} - login to the "OC" client.`);
-			const url: string = BASE_TEST_CONSTANTS.TS_SELENIUM_BASE_URL.replace(/https:\/\/.*\.apps/, 'https://api') + ':6443';
-			if (this.isUserLoggedIn(user)) {
-				Logger.debug(`${this.kubernetesCommandLineTool} - user already logged`);
-			} else {
-				Logger.debug(`${this.kubernetesCommandLineTool} - login ${url}, ${user}`);
-				exec(`oc login --server=${url} -u=${user} -p=${password} --insecure-skip-tls-verify`);
-			}
-		} else {
-			Logger.debug(`${this.kubernetesCommandLineTool} - doesn't support login command`);
-		}
-	}
 
 	getContainerName(): string {
 		Logger.debug(`${this.kubernetesCommandLineTool} - get container name.`);
